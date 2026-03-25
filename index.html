@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuyang Chen — Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0f;
+    --paper: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f30;
+    --mist: #9ea3ae;
+    --deep: #1a1820;
+    --accent: #e8c97a;
+    --crimson: #8b2e3a;
+    --teal: #2e6e7a;
+    --card-bg: rgba(255,255,255,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: linear-gradient(to bottom, rgba(13,13,15,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mist);
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+  /* ── PAGES ── */
+  .page {
+    min-height: 100vh;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .page.active {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+  }
+  /* Home needs its own centering; resume/hobbies just stack normally */
+  #home.active {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ── DECORATIVE DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim));
+  }
+  .divider::after { background: linear-gradient(to left, transparent, var(--gold-dim)); }
+  .divider span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.3em;
+  }
+
+  /* ════════════════════════════
+     HOME PAGE
+  ════════════════════════════ */
+  #home {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .home-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 70%, rgba(46,110,122,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 20% 60%, rgba(139,46,58,0.06) 0%, transparent 60%);
+  }
+
+  /* Subtle geometric pattern */
+  .home-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  }
+
+  .home-content {
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 1.2s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .home-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 1.2s 0.1s ease both;
+  }
+
+  .home-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: 0.08em;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--accent) 50%, var(--paper) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp 1.2s 0.2s ease both;
+  }
+
+  .home-title {
+    font-size: 1.3rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+    margin-top: 0.8rem;
+    animation: fadeUp 1.2s 0.35s ease both;
+  }
+
+  .home-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    animation: fadeUp 1.2s 0.5s ease both;
+  }
+
+  .home-meta a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--mist);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s;
+  }
+  .home-meta a:hover { color: var(--accent); }
+
+  .home-cta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    animation: fadeUp 1.2s 0.65s ease both;
+  }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    border: 1px solid;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: none;
+  }
+
+  .btn-primary {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .btn-primary:hover {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .btn-secondary {
+    border-color: rgba(158,163,174,0.3);
+    color: var(--mist);
+  }
+  .btn-secondary:hover {
+    border-color: var(--mist);
+    color: var(--paper);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.4;
+    animation: fadeUp 1.2s 1s ease both;
+  }
+  .scroll-hint span {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mist);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 0.8; transform: scaleY(1.1); }
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: orbFloat linear infinite;
+    opacity: 0;
+  }
+  @keyframes orbFloat {
+    0%   { transform: translate(0,0) scale(1); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+  }
+
+  /* ════════════════════════════
+     RESUME PAGE
+  ════════════════════════════ */
+  #resume {
+    padding: 8rem 0 4rem;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .page-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .page-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+  }
+
+  /* Resume sections */
+  .resume-section {
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .resume-section.visible { opacity: 1; transform: translateY(0); }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold-dim), transparent);
+  }
+
+  .experience-card {
+    padding: 1.8rem 2rem;
+    border: 1px solid rgba(201,168,76,0.12);
+    background: var(--card-bg);
+    margin-bottom: 1.2rem;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .experience-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .experience-card:hover { border-color: rgba(201,168,76,0.3); }
+  .experience-card:hover::before { opacity: 1; }
+
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+  }
+
+  .exp-period {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    white-space: nowrap;
+    padding-top: 0.3rem;
+  }
+
+  .exp-company {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--mist);
+    margin-bottom: 1rem;
+  }
+
+  .exp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-dim);
+  }
+
+  .exp-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .exp-bullets li {
+    font-size: 0.92rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.75);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .exp-bullets li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold-dim);
+    font-size: 0.4rem;
+    top: 0.5rem;
+  }
+
+  /* Education */
+  .edu-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1.5rem;
+    padding: 1.5rem 2rem;
+    border: 1px solid rgba(201,168,76,0.1);
+    background: var(--card-bg);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+  }
+  .edu-card:hover { border-color: rgba(201,168,76,0.25); }
+
+  .edu-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gold-dim);
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    align-self: center;
+  }
+
+  .edu-degree {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--paper);
+  }
+  .edu-school {
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--mist);
+    margin: 0.25rem 0;
+  }
+  .edu-gpa {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .skill-group {
+    padding: 1.2rem 1.5rem;
+    border: 1px solid rgba(201,168,76,0.1);
+    background: var(--card-bg);
+    transition: border-color 0.3s;
+  }
+  .skill-group:hover { border-color: rgba(201,168,76,0.25); }
+
+  .skill-group-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .skill-group-items {
+    font-size: 0.85rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.7);
+  }
+
+  /* ════════════════════════════
+     HOBBIES PAGE
+  ════════════════════════════ */
+  #hobbies {
+    padding: 8rem 0 6rem;
+  }
+
+  .hobbies-intro {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 5rem;
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.9;
+    color: rgba(245,240,232,0.65);
+    font-style: italic;
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .game-card {
+    position: relative;
+    border: 1px solid rgba(201,168,76,0.12);
+    overflow: hidden;
+    cursor: default;
+    transition: border-color 0.4s, transform 0.4s;
+    background: rgba(10,10,12,0.6);
+  }
+  .game-card:hover {
+    border-color: rgba(201,168,76,0.35);
+    transform: translateY(-4px);
+  }
+
+  .game-art {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* FFXIV Art */
+  .art-ffxiv {
+    background: linear-gradient(135deg, #0a0a14 0%, #1a1035 40%, #0d1a2e 70%, #050510 100%);
+  }
+  .art-ffxiv::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 30% 50%, rgba(100,60,200,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 70% 40%, rgba(60,120,200,0.2) 0%, transparent 60%);
+  }
+
+  /* Crystal SVG for FFXIV */
+  .crystal-svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.85;
+  }
+
+  /* LoL Art */
+  .art-lol {
+    background: linear-gradient(135deg, #0a0e14 0%, #0c1822 40%, #081018 100%);
+  }
+  .art-lol::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,160,40,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 70% 30%, rgba(200,60,40,0.12) 0%, transparent 50%);
+  }
+
+  /* Roguelike Art */
+  .art-rogue {
+    background: linear-gradient(135deg, #0d0810 0%, #1a0e20 40%, #0a0812 100%);
+  }
+  .art-rogue::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(180,60,180,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 50% at 20% 30%, rgba(60,180,120,0.1) 0%, transparent 50%);
+  }
+
+  /* aRPG Art */
+  .art-arpg {
+    background: linear-gradient(135deg, #0e0a08 0%, #1a1008 40%, #100a06 100%);
+  }
+  .art-arpg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,100,40,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 20% 70%, rgba(40,100,200,0.1) 0%, transparent 50%);
+  }
+
+  .game-card-body {
+    padding: 1.5rem 1.8rem;
+  }
+
+  .game-genre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .game-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--paper);
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+  }
+
+  .game-desc {
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.6);
+  }
+
+  .game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .game-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid;
+    opacity: 0.7;
+  }
+
+  .tag-blue { border-color: rgba(60,120,200,0.5); color: #6aabff; }
+  .tag-gold { border-color: rgba(201,168,76,0.5); color: var(--gold); }
+  .tag-purple { border-color: rgba(160,80,200,0.5); color: #c88aff; }
+  .tag-orange { border-color: rgba(200,100,40,0.5); color: #ff9955; }
+  .tag-green { border-color: rgba(40,180,120,0.5); color: #66ddaa; }
+  .tag-red { border-color: rgba(180,40,60,0.5); color: #ff7788; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2.5rem;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: rgba(158,163,174,0.4);
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    .games-grid { grid-template-columns: 1fr; }
+    .home-meta { flex-wrap: wrap; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" onclick="showPage('home')">YC</a>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showPage('resume')" id="nav-resume">Resume</a></li>
+    <li><a onclick="showPage('hobbies')" id="nav-hobbies">Gaming</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════ HOME ══════════════════════════ -->
+<section id="home" class="page active">
+  <div class="home-bg"></div>
+
+  <!-- Floating particles -->
+  <div id="orbs"></div>
+
+  <div class="home-content">
+    <p class="home-eyebrow">Software Engineer &nbsp;·&nbsp; Los Angeles, CA</p>
+    <h1 class="home-name">Yuyang Chen</h1>
+    <p class="home-title">Building things that work. Crafting code with care.</p>
+
+    <div class="home-meta">
+      <a href="mailto:yychen.cs@gmail.com">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        yychen.cs@gmail.com
+      </a>
+      <a href="https://linkedin.com/in/yu-yang-chen" target="_blank">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a href="tel:+17187902371">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63 19.79 19.79 0 011 2.18C.99 1.05 1.93 0 3.07 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +1 718-790-2371
+      </a>
+    </div>
+
+    <div class="home-cta">
+      <button class="btn btn-primary" onclick="showPage('resume')">View Resume</button>
+      <button class="btn btn-secondary" onclick="showPage('hobbies')">Gaming Life</button>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ RESUME ══════════════════════════ -->
+<section id="resume" class="page">
+  <div class="container">
+    <div class="page-header">
+      <p class="page-eyebrow">Career &amp; Education</p>
+      <h2 class="page-title">Résumé</h2>
+    </div>
+
+    <!-- Experience -->
+    <div class="resume-section">
+      <div class="section-label">Experience</div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Software Engineer</div>
+            <div class="exp-company">The Walt Disney Company</div>
+          </div>
+          <div class="exp-period">DEC 2024 – PRESENT</div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">Kotlin</span>
+          <span class="tag">Python</span>
+          <span class="tag">Bash</span>
+          <span class="tag">GitLab CI</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Implemented tooling support for manual &amp; automation QA testers in various aspects</li>
+          <li>Enhanced test automation frameworks by refining GitLab pipeline scripts &amp; ReportPortal dashboards</li>
+          <li>Developed Gherkin &amp; native UI tests for Hulu &amp; Disney+ Android applications</li>
+          <li>Enabled JIRA Xray integration &amp; test runs on STF device farm alongside QA IT team</li>
+          <li>Leveraged account maker tool from Platform Resiliency team for dynamic account creation in testing</li>
+        </ul>
+      </div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Software Engineer</div>
+            <div class="exp-company">Whova Inc.</div>
+          </div>
+          <div class="exp-period">AUG 2022 – OCT 2024</div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">Kotlin</span>
+          <span class="tag">Java</span>
+          <span class="tag">Python</span>
+          <span class="tag">REST API</span>
+          <span class="tag">Android</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Implemented features &amp; refinements for native Android App with 4.8★ average rating &amp; 25,000+ reviews</li>
+          <li>Designed and implemented REST APIs for communication between Backend and Mobile &amp; Web Frontend</li>
+          <li>Maintained stability of Android App by routinely eliminating crashes, ANRs &amp; updating dependencies</li>
+          <li>Mentored multiple junior engineers and interns, led daily 1-1 meetings with leadership &amp; ownership</li>
+          <li>Assisted in software engineer recruiting by participating in interviews and career fairs</li>
+        </ul>
+      </div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Software QA Engineer</div>
+            <div class="exp-company">Whova Inc.</div>
+          </div>
+          <div class="exp-period">OCT 2021 – JUL 2022</div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">Python</span>
+          <span class="tag">GCP</span>
+          <span class="tag">Jenkins</span>
+          <span class="tag">Appium</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Performed manual and automated testing to ensure quality of product across all platforms</li>
+          <li>Led testing of multiple crucial feature releases with major impact on event attendees &amp; organizers</li>
+          <li>Migrated Android auto-testing from local to GCP &amp; Jenkins, improved pass rate from 60% to 90%</li>
+          <li>Created &amp; fixed ~200 automated UI tests used in regression testing, greatly improved test coverage</li>
+          <li>Migrated bug tracking from Google Sheets to Jira, established issue types and workflows</li>
+        </ul>
+      </div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Graduate Teaching Assistant</div>
+            <div class="exp-company">New York University</div>
+          </div>
+          <div class="exp-period">SEP – DEC 2020</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Assisted teaching in CS-GY 6643 Computer Vision &amp; CS-GY 6033 Algorithms (Fall 2020)</li>
+          <li>Held weekly office hours and assisted with grading of student assignments &amp; projects</li>
+        </ul>
+      </div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Graduate Assistant</div>
+            <div class="exp-company">New York University</div>
+          </div>
+          <div class="exp-period">JAN – MAY 2020</div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">Python</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Automated data entry for NYU's graduate admission process, significantly improving efficiency</li>
+          <li>Implemented a Python program to process CSV files containing student application information</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div class="resume-section">
+      <div class="section-label">Education</div>
+
+      <div class="edu-card">
+        <div class="edu-year">2019–2021</div>
+        <div>
+          <div class="edu-degree">M.S. in Computer Science</div>
+          <div class="edu-school">New York University — New York, NY</div>
+          <div class="edu-gpa">CGPA 4.0 / 4.0 &nbsp;·&nbsp; Computer Vision · AI · Big Data Analytics · Network Security</div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-year">2017–2019</div>
+        <div>
+          <div class="edu-degree">B.S. in Computer Science</div>
+          <div class="edu-school">University of Michigan — Ann Arbor, MI</div>
+          <div class="edu-gpa">CGPA 3.66 / 4.0 &nbsp;·&nbsp; Machine Learning · Data Structures · Cryptography · OS · Networks</div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <div class="edu-year">2015–2019</div>
+        <div>
+          <div class="edu-degree">B.S. in Electrical &amp; Computer Engineering</div>
+          <div class="edu-school">Shanghai Jiao Tong University — Shanghai, China</div>
+          <div class="edu-gpa">CGPA 3.41 / 4.0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="resume-section">
+      <div class="section-label">Technical Skills</div>
+      <div class="skills-grid">
+        <div class="skill-group">
+          <div class="skill-group-label">Languages</div>
+          <div class="skill-group-items">Java · Kotlin · Python · SQL · Bash · C · C++ · MATLAB · XML</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-label">Mobile</div>
+          <div class="skill-group-items">Android Studio · Kotlin / Java · Appium · Gherkin · UI Testing</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-label">DevOps</div>
+          <div class="skill-group-items">Git · Jenkins · GitLab CI · GCP · Linux · Docker</div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-label">QA &amp; Testing</div>
+          <div class="skill-group-items">Selenium · Appium · ReportPortal · JIRA Xray · STF</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="resume-section">
+      <div class="section-label">Projects</div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Cloud-based Appium Automated Testing</div>
+            <div class="exp-company">Whova Inc. — Summer 2022</div>
+          </div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">GCP</span>
+          <span class="tag">Appium</span>
+          <span class="tag">Jenkins</span>
+          <span class="tag">Bash</span>
+          <span class="tag">Android SDK</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Created Android emulators on Google Cloud VM using Android SDK and CLI tools</li>
+          <li>Set up Appium testing framework by installing required packages and configuring environment</li>
+          <li>Built a Jenkins server and wrote Bash scripts to enable remote test running and GitLab integration</li>
+          <li>Improved automated testing efficiency &amp; stability, saving cost vs third-party services</li>
+        </ul>
+      </div>
+
+      <div class="experience-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Shared Component Retrieval System</div>
+            <div class="exp-company">Shanghai Jiao Tong University — Summer 2019</div>
+          </div>
+        </div>
+        <div class="exp-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Tesseract</span>
+          <span class="tag">MNIST</span>
+          <span class="tag">pHash</span>
+          <span class="tag">Computer Vision</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Sponsored by Giti Tire, one of the largest tire companies in the world</li>
+          <li>Customer-oriented project aimed at avoiding duplicate work for digitalizing tire components</li>
+          <li>Used ML &amp; CV techniques including Tesseract, MNIST &amp; pHash to identify similar images</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ HOBBIES ══════════════════════════ -->
+<section id="hobbies" class="page">
+  <div class="container">
+    <div class="page-header">
+      <p class="page-eyebrow">Beyond the Code</p>
+      <h2 class="page-title">Gaming Life</h2>
+    </div>
+
+    <p class="hobbies-intro">
+      When not writing code, I'm deep in another world entirely — exploring sprawling MMOs,
+      climbing ranked ladders, building broken decks, and hunting for build synergies in dark dungeons.
+      Games are where craft meets play, and I take them as seriously as my work.
+    </p>
+
+    <div class="games-grid">
+
+      <!-- FFXIV -->
+      <div class="game-card">
+        <div class="game-art art-ffxiv">
+          <svg class="crystal-svg" width="100" height="120" viewBox="0 0 100 120">
+            <defs>
+              <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#a0c8ff;stop-opacity:0.9"/>
+                <stop offset="50%" style="stop-color:#6090e0;stop-opacity:0.7"/>
+                <stop offset="100%" style="stop-color:#302870;stop-opacity:0.8"/>
+              </linearGradient>
+              <linearGradient id="cg2" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#c0a0ff;stop-opacity:0.8"/>
+                <stop offset="100%" style="stop-color:#5030a0;stop-opacity:0.6"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Main crystal -->
+            <polygon points="50,5 75,35 65,90 50,105 35,90 25,35" fill="url(#cg1)" filter="url(#glow)" opacity="0.9"/>
+            <polygon points="50,5 75,35 50,50" fill="rgba(200,220,255,0.4)"/>
+            <polygon points="50,50 75,35 65,90 50,105" fill="rgba(100,120,220,0.5)"/>
+            <polygon points="50,5 25,35 50,50" fill="rgba(180,160,255,0.3)"/>
+            <polygon points="50,50 25,35 35,90 50,105" fill="rgba(80,60,180,0.4)"/>
+            <!-- Inner light -->
+            <ellipse cx="50" cy="45" rx="8" ry="12" fill="rgba(200,220,255,0.6)"/>
+            <!-- Side crystals -->
+            <polygon points="20,40 30,50 25,70 18,65" fill="url(#cg2)" opacity="0.6"/>
+            <polygon points="80,40 70,50 75,70 82,65" fill="url(#cg2)" opacity="0.6"/>
+          </svg>
+          <!-- Stars -->
+          <div style="position:absolute;inset:0;overflow:hidden">
+            <div style="position:absolute;width:2px;height:2px;background:white;border-radius:50%;top:15%;left:20%;opacity:0.7;box-shadow:0 0 4px white"></div>
+            <div style="position:absolute;width:1px;height:1px;background:white;border-radius:50%;top:25%;left:75%;opacity:0.5"></div>
+            <div style="position:absolute;width:2px;height:2px;background:#c0d0ff;border-radius:50%;top:60%;left:85%;opacity:0.6;box-shadow:0 0 3px #c0d0ff"></div>
+            <div style="position:absolute;width:1px;height:1px;background:white;border-radius:50%;top:70%;left:10%;opacity:0.4"></div>
+            <div style="position:absolute;width:2px;height:2px;background:white;border-radius:50%;top:40%;left:90%;opacity:0.5"></div>
+          </div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-genre">MMORPG</div>
+          <div class="game-title">Final Fantasy XIV</div>
+          <div class="game-desc">My home away from home. An MMO that I keep returning to for its incredible story, lavish world design, and welcoming community. There's always a new raid to prog, a new job to level, or a housing project to obsess over.</div>
+          <div class="game-tags">
+            <span class="game-tag tag-blue">MMO</span>
+            <span class="game-tag tag-purple">Story-rich</span>
+            <span class="game-tag tag-gold">Raiding</span>
+            <span class="game-tag tag-green">Crafting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LoL -->
+      <div class="game-card">
+        <div class="game-art art-lol">
+          <!-- Hex pattern -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.15" viewBox="0 0 300 180">
+            <defs>
+              <pattern id="hex" x="0" y="0" width="40" height="46" patternUnits="userSpaceOnUse">
+                <polygon points="20,2 38,13 38,35 20,46 2,35 2,13" fill="none" stroke="#c9a84c" stroke-width="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="300" height="180" fill="url(#hex)"/>
+          </svg>
+          <!-- Summoner's Rift glow -->
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;border:1px solid rgba(200,160,40,0.4);box-shadow:0 0 30px rgba(200,160,40,0.2),inset 0 0 20px rgba(200,160,40,0.1)"></div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,rgba(200,160,40,0.3),transparent);box-shadow:0 0 20px rgba(200,160,40,0.4)"></div>
+        </div>
+        <div class="game-card-body">
+          <div class="game-genre">MOBA</div>
+          <div class="game-title">League of Legends</div>
+          <div class="game-desc">A constant in my gaming life — the competitive itch that never quite goes away. Whether it's learning a new champion, flexing different roles, or just grinding out ranked, the Rift always has something to teach.</div>
+          <div class="game-tags">
+            <span class="game-tag tag-gold">Competitive</span>
+            <span class="game-tag tag-red">Ranked</span>
+            <span class="game-tag tag-blue">Team Play</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Roguelikes -->
+      <div class="game-card">
+        <div class="game-art art-rogue">
+          <!-- Card deck art -->
+          <svg style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)" width="120" height="140" viewBox="0 0 120 140">
+            <!-- Shadow cards -->
+            <rect x="10" y="25" width="70" height="95" rx="6" fill="rgba(160,80,200,0.15)" stroke="rgba(160,80,200,0.3)" stroke-width="1" transform="rotate(-12,45,72)"/>
+            <rect x="15" y="22" width="70" height="95" rx="6" fill="rgba(60,180,120,0.1)" stroke="rgba(60,180,120,0.3)" stroke-width="1" transform="rotate(-5,50,70)"/>
+            <!-- Main card -->
+            <rect x="25" y="20" width="70" height="95" rx="6" fill="rgba(30,15,45,0.9)" stroke="rgba(160,80,200,0.6)" stroke-width="1.5"/>
+            <!-- Card art: sword -->
+            <line x1="60" y1="38" x2="60" y2="80" stroke="rgba(200,180,255,0.8)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="48" y1="58" x2="72" y2="58" stroke="rgba(200,180,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="60" cy="84" r="5" fill="none" stroke="rgba(160,80,200,0.8)" stroke-width="1.5"/>
+            <!-- Sparkles -->
+            <circle cx="45" cy="42" r="1.5" fill="rgba(200,180,255,0.8)"/>
+            <circle cx="75" cy="35" r="1" fill="rgba(100,220,160,0.8)"/>
+            <circle cx="42" cy="72" r="1" fill="rgba(200,180,255,0.6)"/>
+            <!-- Energy pip -->
+            <circle cx="60" cy="104" r="6" fill="none" stroke="rgba(60,180,120,0.6)" stroke-width="1.5"/>
+            <circle cx="60" cy="104" r="3" fill="rgba(60,180,120,0.4)"/>
+          </svg>
+        </div>
+        <div class="game-card-body">
+          <div class="game-genre">Roguelike / Deckbuilder</div>
+          <div class="game-title">Slay the Spire I &amp; II</div>
+          <div class="game-desc">Pure deckbuilding dopamine. No two runs feel the same, and every choice cascades beautifully into chaos or victory. The sequel's new mechanics add even more ways to cook up degenerate synergy combos.</div>
+          <div class="game-tags">
+            <span class="game-tag tag-purple">Deckbuilder</span>
+            <span class="game-tag tag-green">Strategy</span>
+            <span class="game-tag tag-red">Roguelite</span>
+            <span class="game-tag tag-gold">Run-based</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Epoch / aRPG -->
+      <div class="game-card">
+        <div class="game-art art-arpg">
+          <!-- Timeline / skill tree art -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 300 180">
+            <!-- Glow circle -->
+            <circle cx="150" cy="90" r="55" fill="none" stroke="rgba(200,100,40,0.2)" stroke-width="1"/>
+            <circle cx="150" cy="90" r="35" fill="none" stroke="rgba(200,100,40,0.3)" stroke-width="1"/>
+            <circle cx="150" cy="90" r="15" fill="rgba(200,100,40,0.15)" stroke="rgba(200,100,40,0.5)" stroke-width="1.5"/>
+            <!-- Skill nodes -->
+            <circle cx="150" cy="35" r="5" fill="rgba(200,100,40,0.7)" stroke="rgba(240,160,80,0.8)" stroke-width="1"/>
+            <line x1="150" y1="40" x2="150" y2="75" stroke="rgba(200,100,40,0.4)" stroke-width="1"/>
+            <circle cx="205" cy="62" r="4" fill="rgba(40,100,200,0.7)" stroke="rgba(80,160,240,0.8)" stroke-width="1"/>
+            <line x1="200" y1="67" x2="165" y2="82" stroke="rgba(40,100,200,0.3)" stroke-width="1"/>
+            <circle cx="205" cy="118" r="4" fill="rgba(200,100,40,0.5)" stroke="rgba(200,100,40,0.7)" stroke-width="1"/>
+            <line x1="200" y1="113" x2="165" y2="98" stroke="rgba(200,100,40,0.3)" stroke-width="1"/>
+            <circle cx="150" cy="145" r="5" fill="rgba(180,40,60,0.7)" stroke="rgba(240,80,100,0.8)" stroke-width="1"/>
+            <line x1="150" y1="140" x2="150" y2="105" stroke="rgba(180,40,60,0.4)" stroke-width="1"/>
+            <circle cx="95" cy="118" r="4" fill="rgba(40,160,100,0.7)" stroke="rgba(80,220,140,0.8)" stroke-width="1"/>
+            <line x1="100" y1="113" x2="135" y2="98" stroke="rgba(40,160,100,0.3)" stroke-width="1"/>
+            <circle cx="95" cy="62" r="4" fill="rgba(160,40,200,0.6)" stroke="rgba(200,80,240,0.8)" stroke-width="1"/>
+            <line x1="100" y1="67" x2="135" y2="82" stroke="rgba(160,40,200,0.3)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="game-card-body">
+          <div class="game-genre">Action RPG</div>
+          <div class="game-title">Last Epoch</div>
+          <div class="game-desc">The aRPG that scratches the loot-hunting, skill-tree-maxing, endgame-grinding itch. Deep itemization, satisfying crafting, and a time-travel narrative that's surprisingly compelling. A worthy contender in the genre.</div>
+          <div class="game-tags">
+            <span class="game-tag tag-orange">Loot-based</span>
+            <span class="game-tag tag-red">Endgame</span>
+            <span class="game-tag tag-gold">Crafting</span>
+            <span class="game-tag tag-purple">Build Theory</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"><span>◆</span></div>
+
+    <p style="text-align:center;font-size:0.85rem;font-style:italic;color:rgba(245,240,232,0.4);margin-top:2rem;font-family:'Cormorant Garamond',serif;">
+      Always looking for the next great game — or a fellow Warrior of Light to run savage raids with.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Yuyang Chen &nbsp;·&nbsp; Built with care &nbsp;·&nbsp; Los Angeles, CA</p>
+</footer>
+
+<script>
+  // ── Page switching ──
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active');
+      p.style.display = '';
+      p.style.opacity = '0';
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+    const page = document.getElementById(id);
+    const navLink = document.getElementById('nav-' + id);
+
+    // Re-trigger home entrance animations by cloning animated children
+    if (id === 'home') {
+      const animated = page.querySelectorAll('.home-eyebrow, .home-name, .home-title, .home-meta, .home-cta, .home-content, .scroll-hint');
+      animated.forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight; // reflow
+        el.style.animation = '';
+      });
+    }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        page.classList.add('active');
+        page.style.opacity = '1';
+      });
+    });
+
+    if (navLink) navLink.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Trigger scroll animations
+    setTimeout(() => initScrollAnimations(), 100);
+  }
+
+  // ── Scroll animations for resume cards ──
+  function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.resume-section').forEach(el => {
+      observer.observe(el);
+    });
+  }
+
+  // ── Floating orbs on home ──
+  function createOrbs() {
+    const container = document.getElementById('orbs');
+    const colors = [
+      'rgba(201,168,76,0.15)',
+      'rgba(46,110,122,0.12)',
+      'rgba(139,46,58,0.1)',
+      'rgba(200,200,255,0.08)'
+    ];
+
+    for (let i = 0; i < 8; i++) {
+      const orb = document.createElement('div');
+      const size = Math.random() * 200 + 50;
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const dx = (Math.random() - 0.5) * 200 + 'px';
+      const dy = (Math.random() - 0.5) * 200 + 'px';
+      const duration = Math.random() * 15 + 10;
+      const delay = Math.random() * -20;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      orb.className = 'orb';
+      orb.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}%;
+        top: ${y}%;
+        --dx: ${dx};
+        --dy: ${dy};
+        background: radial-gradient(circle, ${color}, transparent);
+        animation-duration: ${duration}s;
+        animation-delay: ${delay}s;
+        filter: blur(${size / 4}px);
+      `;
+      container.appendChild(orb);
+    }
+  }
+
+  // Init
+  createOrbs();
+  initScrollAnimations();
+</script>
+</body>
+</html>
